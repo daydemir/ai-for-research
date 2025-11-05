@@ -17,3 +17,5 @@ https://data.cityofnewyork.us/Public-Safety/Motor-Vehicle-Collisions-Crashes/h9g
  - make sure it's in this folder and named: `Motor_Vehicle_Collisions_-_Crashes.csv`
 
 
+
+[Sign up for updates](https://deniz.kit.com/f72c0b1f21)
