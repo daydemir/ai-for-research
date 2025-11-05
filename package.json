@@ -1,0 +1,26 @@
+{
+  "name": "ai-for-research",
+  "version": "1.0.0",
+  "description": "An interactive web application for analyzing and visualizing NYC motor vehicle crash data from 2012-2025. Features novel hexbin mapping, comprehensive analytics, and data-driven insights.",
+  "main": "index.js",
+  "scripts": {
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "test:ui": "playwright test --ui"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/daydemir/ai-for-research.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/daydemir/ai-for-research/issues"
+  },
+  "homepage": "https://github.com/daydemir/ai-for-research#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.56.1"
+  }
+}

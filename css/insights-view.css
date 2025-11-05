@@ -1,0 +1,222 @@
+/* Insights View Styles */
+.insights-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    background: var(--card-bg);
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+    text-align: center;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-hover);
+}
+
+.stat-card h3 {
+    font-size: 0.9rem;
+    color: #7f8c8d;
+    margin-bottom: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.stat-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--secondary-color);
+    margin-bottom: 0.5rem;
+    line-height: 1;
+}
+
+.stat-detail {
+    font-size: 0.85rem;
+    color: #7f8c8d;
+}
+
+/* Insights Sections */
+.insights-section {
+    background: var(--card-bg);
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+    margin-bottom: 1.5rem;
+}
+
+.insights-section h2 {
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+    font-size: 1.4rem;
+    font-weight: 600;
+}
+
+/* Findings List */
+.findings-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.finding-item {
+    padding: 1rem;
+    background: var(--bg-color);
+    border-radius: 6px;
+    border-left: 4px solid var(--secondary-color);
+}
+
+.finding-item.warning {
+    border-left-color: var(--warning-color);
+}
+
+.finding-item.danger {
+    border-left-color: var(--accent-color);
+}
+
+.finding-item.success {
+    border-left-color: var(--success-color);
+}
+
+.finding-title {
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-bottom: 0.3rem;
+}
+
+.finding-description {
+    font-size: 0.9rem;
+    color: #7f8c8d;
+}
+
+/* Intersections List */
+.intersections-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.intersection-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    background: var(--bg-color);
+    border-radius: 6px;
+    transition: background 0.2s ease;
+}
+
+.intersection-item:hover {
+    background: #d5dbdb;
+}
+
+.intersection-rank {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    background: var(--primary-color);
+    color: white;
+    border-radius: 50%;
+    font-weight: 700;
+    font-size: 0.9rem;
+    margin-right: 1rem;
+}
+
+.intersection-name {
+    flex: 1;
+    font-weight: 500;
+    color: var(--primary-color);
+}
+
+.intersection-count {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.crash-count {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--accent-color);
+}
+
+.crash-label {
+    font-size: 0.75rem;
+    color: #7f8c8d;
+}
+
+/* Quality Report */
+.quality-report {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.quality-item {
+    padding: 1rem;
+    background: var(--bg-color);
+    border-radius: 6px;
+}
+
+.quality-label {
+    font-size: 0.85rem;
+    color: #7f8c8d;
+    margin-bottom: 0.5rem;
+}
+
+.quality-value {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+.quality-bar {
+    height: 6px;
+    background: #ecf0f1;
+    border-radius: 3px;
+    overflow: hidden;
+    margin-top: 0.5rem;
+}
+
+.quality-fill {
+    height: 100%;
+    background: var(--success-color);
+    transition: width 0.5s ease;
+}
+
+.quality-fill.warning {
+    background: var(--warning-color);
+}
+
+.quality-fill.danger {
+    background: var(--accent-color);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .insights-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .stat-value {
+        font-size: 2rem;
+    }
+
+    .intersection-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    .intersection-count {
+        align-items: flex-start;
+        width: 100%;
+    }
+}

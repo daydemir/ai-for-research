@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NYC Crash Data Visualization</title>
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/map-view.css">
+    <link rel="stylesheet" href="css/charts-view.css">
+    <link rel="stylesheet" href="css/insights-view.css">
+</head>
+<body>
+    <header>
+        <h1>NYC Motor Vehicle Crash Analysis</h1>
+        <p class="subtitle">Exploring 2.2M+ crashes from 2012-2025</p>
+    </header>
+
+    <nav class="main-nav">
+        <button class="nav-btn active" data-view="map">Hexbin Map</button>
+        <button class="nav-btn" data-view="charts">Analytics</button>
+        <button class="nav-btn" data-view="insights">Insights</button>
+    </nav>
+
+    <div id="loading-screen" class="loading-screen">
+        <div class="loading-content">
+            <div class="spinner"></div>
+            <h2>Loading NYC Crash Data...</h2>
+            <p class="loading-message">Processing CSV file...</p>
+            <div class="progress-bar">
+                <div class="progress-fill"></div>
+            </div>
+            <p class="progress-text">0%</p>
+        </div>
+    </div>
+
+    <!-- Map View -->
+    <div id="map-view" class="view-container active">
+        <div class="controls-panel">
+            <h3>Filters</h3>
+
+            <div class="filter-group">
+                <div class="filter-header">
+                    <label>Time of Day</label>
+                    <button class="reset-btn" data-filter="hour" title="Reset to all hours">Reset</button>
+                </div>
+                <div class="slider-container">
+                    <input type="range" id="hour-filter" min="0" max="24" value="0" step="1">
+                    <div class="slider-track-fill" id="hour-track-fill"></div>
+                </div>
+                <div class="slider-value-display">
+                    <span id="hour-display" class="value-badge">All Hours</span>
+                </div>
+            </div>
+
+            <div class="filter-group">
+                <div class="filter-header">
+                    <label>Year Range</label>
+                    <button class="reset-btn" data-filter="year" title="Reset to full range">Reset</button>
+                </div>
+                <div class="year-slider-wrapper">
+                    <div class="year-slider-group">
+                        <label class="slider-sublabel">From:</label>
+                        <div class="slider-container">
+                            <input type="range" id="year-min" min="2012" max="2025" value="2012" step="1">
+                            <div class="slider-track-fill" id="year-min-track-fill"></div>
+                        </div>
+                        <span id="year-min-display" class="year-value">2012</span>
+                    </div>
+                    <div class="year-slider-group">
+                        <label class="slider-sublabel">To:</label>
+                        <div class="slider-container">
+                            <input type="range" id="year-max" min="2012" max="2025" value="2025" step="1">
+                            <div class="slider-track-fill" id="year-max-track-fill"></div>
+                        </div>
+                        <span id="year-max-display" class="year-value">2025</span>
+                    </div>
+                </div>
+                <div class="slider-value-display">
+                    <span id="year-range-display" class="value-badge">2012 - 2025</span>
+                </div>
+            </div>
+
+            <div class="filter-group">
+                <label>Severity</label>
+                <select id="severity-filter">
+                    <option value="all">All Crashes</option>
+                    <option value="injury">Injuries Only</option>
+                    <option value="fatal">Fatalities Only</option>
+                    <option value="property">Property Damage Only</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label>Victim Type</label>
+                <div class="checkbox-group">
+                    <label><input type="checkbox" id="filter-pedestrian" checked> Pedestrians</label>
+                    <label><input type="checkbox" id="filter-cyclist" checked> Cyclists</label>
+                    <label><input type="checkbox" id="filter-motorist" checked> Motorists</label>
+                </div>
+            </div>
+
+            <button id="reset-all-filters" class="primary-btn">Reset All Filters</button>
+        </div>
+
+        <div class="map-container">
+            <div id="map"></div>
+            <div id="map-legend" class="legend">
+                <h4>Crash Density</h4>
+                <div id="legend-scale"></div>
+            </div>
+        </div>
+
+        <div id="hex-detail-panel" class="detail-panel hidden">
+            <button class="close-btn">&times;</button>
+            <h3>Hexagon Details</h3>
+            <div id="hex-details-content"></div>
+        </div>
+    </div>
+
+    <!-- Charts View -->
+    <div id="charts-view" class="view-container">
+        <div class="charts-grid">
+            <div class="chart-card">
+                <h3>Crashes by Hour & Day of Week</h3>
+                <canvas id="temporal-heatmap"></canvas>
+            </div>
+
+            <div class="chart-card">
+                <h3>Crash Severity Distribution</h3>
+                <canvas id="severity-chart"></canvas>
+            </div>
+
+            <div class="chart-card">
+                <h3>Top Contributing Factors</h3>
+                <canvas id="factors-chart"></canvas>
+            </div>
+
+            <div class="chart-card">
+                <h3>Monthly Trends</h3>
+                <canvas id="monthly-trends"></canvas>
+            </div>
+
+            <div class="chart-card">
+                <h3>Crashes by Borough</h3>
+                <canvas id="borough-chart"></canvas>
+            </div>
+
+            <div class="chart-card">
+                <h3>Top Vehicle Types</h3>
+                <canvas id="vehicle-chart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Insights View -->
+    <div id="insights-view" class="view-container">
+        <div class="insights-grid">
+            <div class="stat-card">
+                <h3>Total Crashes</h3>
+                <div class="stat-value" id="stat-total-crashes">-</div>
+                <div class="stat-detail" id="stat-crashes-detail">-</div>
+            </div>
+
+            <div class="stat-card">
+                <h3>Total Casualties</h3>
+                <div class="stat-value" id="stat-casualties">-</div>
+                <div class="stat-detail" id="stat-casualties-detail">-</div>
+            </div>
+
+            <div class="stat-card">
+                <h3>Most Dangerous Time</h3>
+                <div class="stat-value" id="stat-dangerous-time">-</div>
+                <div class="stat-detail" id="stat-dangerous-detail">-</div>
+            </div>
+
+            <div class="stat-card">
+                <h3>Safest Time</h3>
+                <div class="stat-value" id="stat-safest-time">-</div>
+                <div class="stat-detail" id="stat-safest-detail">-</div>
+            </div>
+        </div>
+
+        <div class="insights-section">
+            <h2>Key Findings</h2>
+            <div id="key-findings" class="findings-list"></div>
+        </div>
+
+        <div class="insights-section">
+            <h2>Top 10 Most Dangerous Intersections</h2>
+            <div id="dangerous-intersections" class="intersections-list"></div>
+        </div>
+
+        <div class="insights-section">
+            <h2>Data Quality Report</h2>
+            <div id="data-quality" class="quality-report"></div>
+        </div>
+    </div>
+
+    <!-- External Libraries -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+    <script src="https://unpkg.com/papaparse@5.4.1/papaparse.min.js"></script>
+    <script src="https://d3js.org/d3-hexbin.v0.2.min.js"></script>
+
+    <!-- Verify libraries loaded -->
+    <script>
+        console.log('=== Library Load Check ===');
+        console.log('Leaflet (L):', typeof L !== 'undefined' ? '✓ Loaded' : '✗ FAILED');
+        console.log('Chart.js:', typeof Chart !== 'undefined' ? '✓ Loaded' : '✗ FAILED');
+        console.log('PapaParse:', typeof Papa !== 'undefined' ? '✓ Loaded' : '✗ FAILED');
+        console.log('d3-hexbin:', typeof d3 !== 'undefined' ? '✓ Loaded' : '✗ FAILED');
+        if (typeof d3 !== 'undefined') {
+            console.log('  d3.hexbin:', typeof d3.hexbin !== 'undefined' ? '✓ Available' : '✗ NOT AVAILABLE');
+        }
+        console.log('========================');
+    </script>
+
+    <!-- Application Scripts -->
+    <script src="js/utils.js"></script>
+    <script src="js/data-loader.js"></script>
+    <script src="js/data-processor.js"></script>
+    <script src="js/map-view.js"></script>
+    <script src="js/charts-view.js"></script>
+    <script src="js/insights-view.js"></script>
+
+    <script>
+        // Main application initialization
+        document.addEventListener('DOMContentLoaded', () => {
+            // Navigation between views
+            const navButtons = document.querySelectorAll('.nav-btn');
+            const viewContainers = document.querySelectorAll('.view-container');
+
+            navButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const targetView = btn.dataset.view;
+
+                    // Update active states
+                    navButtons.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+
+                    viewContainers.forEach(v => v.classList.remove('active'));
+                    document.getElementById(`${targetView}-view`).classList.add('active');
+                });
+            });
+
+            // Failsafe: Hide loading screen after max 60 seconds
+            setTimeout(() => {
+                const loadingScreen = document.getElementById('loading-screen');
+                if (loadingScreen && !loadingScreen.classList.contains('hidden')) {
+                    console.warn('⚠ FAILSAFE: Forcing loading screen to hide after 60s timeout');
+                    loadingScreen.classList.add('hidden');
+                }
+            }, 60000);
+
+            // Start loading data
+            loadAndProcessData();
+        });
+    </script>
+</body>
+</html>
